@@ -4,7 +4,8 @@ requests==2.31.0
 beautifulsoup4==4.12.2
 python-dotenv==1.0.0
 # AI / ML (CPU versions favored where possible via Dockerfile)
-sentence-transformers==2.2.2
+# Upgrade to 3.0+ to support modern huggingface_hub
+sentence-transformers>=3.0.0
 faiss-cpu==1.7.4
 # Pin numpy < 2.0 to ensure compatibility with current faiss-cpu wheels
 numpy<2.0
