@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}{{ query }} - Boogle{% endblock %}
+
+{% block content %}
+<div class="app-header">
+    <a href="/" class="brand">Boogle<span>V6</span></a>
+
+    <form action="/search" method="get" style="flex-grow: 1; max-width: 500px; margin-left: 40px;">
+        <div class="search-container" style="padding: 6px 15px;">
+            <input type="text" name="q" class="search-input" value="{{ query }}" autocomplete="off">
+            <button type="submit" class="search-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="result-stats">
+    {% if results %}
+    Found {{ results|length }} result(s) in {{ "%.3f"|format(time_taken|default(0.0)) }}s
+    {% else %}
+    No results found for <strong>{{ query }}</strong>
+    {% endif %}
+</div>
+
+{% if was_corrected %}
+<div class="spelling-suggestion">
+    Did you mean: <a href="/search?q={{ corrected_query }}">{{ corrected_query }}</a>?
+</div>
+{% endif %}
+
+<div class="results-list">
+    {% for result in results %}
+    <div class="result-card">
+        <div class="result-header">
+            <a href="{{ result.metadata.url }}" class="result-url">{{ result.metadata.url }}</a>
+            <a href="{{ result.metadata.url }}" class="result-title">{{ result.metadata.title }}</a>
+        </div>
+
+        <div class="result-snippet">
+            {{ result.snippet|safe }}
+        </div>
+
+        <div class="result-footer">
+            <div class="score-bar-container" title="Relevance Breakdown">
+                <div class="score-bar">
+                    {# Normalize scores for the bar #}
+                    {% set comp = result.components %}
+                    {% set total = comp.bm25 + comp.vector + comp.pr %}
+                    {% if total > 0 %}
+                    <div class="score-segment lexical" style="flex: {{ comp.bm25 }};"
+                        title="Lexical Match: {{ '%.2f'|format(comp.bm25) }}"></div>
+                    <div class="score-segment semantic" style="flex: {{ comp.vector }};"
+                        title="Semantic Match: {{ '%.2f'|format(comp.vector) }}"></div>
+                    <div class="score-segment page-rank" style="flex: {{ comp.pr }};"
+                        title="PageRank: {{ '%.2f'|format(comp.pr) }}"></div>
+                    {% endif %}
+                </div>
+                <span>Transparency Score: {{ "%.2f"|format(result.score) }}</span>
+            </div>
+
+            <div class="badges">
+                {% if result.components.phrase %}
+                <span class="badge phrase">Phrase Match</span>
+                {% endif %}
+                {% if result.components.vector > 0.5 %}
+                <span class="badge vector">Semantic</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

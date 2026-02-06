@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Boogle Crawler Status{% endblock %}
+
+{% block content %}
+<div class="app-header">
+    <a href="/" class="brand">Boogle<span>Admin</span></a>
+</div>
+
+<div class="container" style="max-width: 600px;">
+    <h1>Crawler Status</h1>
+
+    <div class="result-card">
+        <div class="result-header">
+            <span class="result-title">Budget Usage</span>
+        </div>
+
+        <div class="result-snippet">
+            <p><strong>Hourly:</strong> {{ state.hourly_count }} / 100</p>
+            <p><strong>Daily:</strong> {{ state.daily_count }} / 1000</p>
+            <p><strong>Total Indexed:</strong> {{ state.total_pages_crawled }}</p>
+        </div>
+
+        <div class="result-footer">
+            <span>Last Reset (Hour): {{ state.last_reset_hour }}</span>
+        </div>
+    </div>
+
+    <div class="result-card">
+        <div class="result-header">
+            <span class="result-title">Queue Status</span>
+        </div>
+        <div class="result-snippet">
+            <p><strong>Pending URLs:</strong> {{ queue_len }}</p>
+        </div>
+    </div>
+
+    <div style="margin-top: 20px; text-align: center;">
+        <a href="/status" class="search-button"
+            style="border-radius: 4px; border: 1px solid var(--border-highlight);">Refresh</a>
+    </div>
+</div>
+{% endblock %}
