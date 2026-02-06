@@ -77,7 +77,4 @@ def status():
     return render_template('dashboard.html', state=state, queue_len=queue_len)
 
 if __name__ == '__main__':
-    # Use PORT from environment for Render/Cloud, default to Config port
-    port = int(os.environ.get("PORT", Config.FLASK_PORT))
-    # Host must be 0.0.0.0 for external access in containers/cloud
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(port=Config.FLASK_PORT, debug=True)
