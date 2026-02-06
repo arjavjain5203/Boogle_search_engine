@@ -6,7 +6,8 @@ python-dotenv==1.0.0
 # AI / ML (CPU versions favored where possible via Dockerfile)
 sentence-transformers==2.2.2
 faiss-cpu==1.7.4
-numpy>=1.24.0
+# Pin numpy < 2.0 to ensure compatibility with current faiss-cpu wheels
+numpy<2.0
 nltk>=3.8.1
 networkx>=3.0
 # Explicit CPU Torch to avoid NVIDIA bloat in simple deploys
