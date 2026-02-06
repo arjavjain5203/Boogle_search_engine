@@ -1,32 +1,46 @@
+# Use Python 3.10 Slim for minimal image size
 FROM python:3.10-slim
 
+# Set working directory
 WORKDIR /app
 
+# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    FLASK_APP=boogle.frontend.app
 
-# System dependencies
+# Install system dependencies
+# build-essential: for compiling some python extensions
+# curl: for healthchecks or downloads
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
+# Copy requirements first to leverage Docker cache
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+
+# Install Python dependencies
+# Use CPU-only PyTorch index to keep image size small (~1GB instead of 3GB)
+RUN pip install --no-cache-dir -r requirements.txt \
+    --extra-index-url https://download.pytorch.org/whl/cpu
+
+# Download NLTK data (stopwords) during build to avoid runtime download
+RUN python3 -c "import nltk; nltk.download('stopwords')"
 
 # Copy project files
 COPY . .
 
-# Create storage directories
+# Create storage directory structure
 RUN mkdir -p boogle/storage/data/raw \
-    && mkdir -p boogle/storage/data/index
+    && mkdir -p boogle/storage/data/index \
+    && chmod -R 777 boogle/storage
 
-# Render uses $PORT (usually 10000)
-EXPOSE 10000
+# Make entrypoint executable
+RUN chmod +x entrypoint.sh
 
-# Start with Gunicorn (PRODUCTION SAFE)
-CMD gunicorn boogle.frontend.app:app \
-    --bind 0.0.0.0:$PORT \
-    --workers 1 \
-    --threads 4 \
-    --timeout 120
+# Expose port (Documentation only, usually ignored by PaaS)
+EXPOSE 5000
+
+# Use the entrypoint script
+CMD ["./entrypoint.sh"]
