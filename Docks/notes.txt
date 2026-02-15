@@ -1,0 +1,22 @@
+search engine has 3 parts
+1 crawler
+2 indexer
+3 frontend
+
+
+crawler / spider
+search the website and collect data
+
+(cillect and store the urls )
+
+indexer
+it organises the data and creates an index for it
+using reverse indexing
+
+remove stop words
+sremming : reducing words to their root form
+frontend / serving
+it provides the user interface for users to search and view results
+
+
+# pagerank system : connect the pages based on their links and at start rank them at same weight then after that rank them based on the links they have from other high ranked pages 
