@@ -1,0 +1,16 @@
+flask==3.0.0
+gunicorn>=21.2.0
+requests==2.31.0
+beautifulsoup4==4.12.2
+python-dotenv==1.0.0
+# AI / ML (CPU versions favored where possible via Dockerfile)
+# Upgrade to 3.0+ to support modern huggingface_hub
+sentence-transformers>=3.0.0
+faiss-cpu==1.7.4
+# Pin numpy < 2.0 to ensure compatibility with current faiss-cpu wheels
+numpy<2.0
+nltk>=3.8.1
+networkx>=3.0
+# Explicit CPU Torch to avoid NVIDIA bloat in simple deploys
+# Note: In Dockerfile we usually point to the extra index url
+torch>=2.0.0 --index-url https://download.pytorch.org/whl/cpu
